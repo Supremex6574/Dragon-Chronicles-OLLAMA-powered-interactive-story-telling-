@@ -1,0 +1,2076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dragon Warrior - Epic Adventure</title>
+  <style>
+   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Press+Start+2P&family=Creepster&display=swap');
+        
+        :root {
+          --primary-gold: #ffd700;
+          --secondary-red: #dc143c;
+          --dark-bg: #0a0a0a;
+          --card-bg: #1a1a1a;
+          --border-glow: #00ffe1;
+          --health-green: #32cd32;
+          --mana-blue: #4169e1;
+          --danger-red: #ff4444;
+          --dragon-fire: #ff6b35;
+          --magic-purple: #8a2be2;
+          --emerald: #50c878;
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          background: 
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(80, 200, 120, 0.2) 0%, transparent 50%),
+            linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 25%, #0a1a0a 50%, #1a1a1a 75%, #0a0a0a 100%);
+          color: #f8f8f2;
+          font-family: 'Cinzel', serif;
+          min-height: 100vh;
+          overflow-x: hidden;
+          position: relative;
+        }
+
+        /* Animated Background Particles */
+        body::before {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-image: 
+            radial-gradient(2px 2px at 20px 30px, rgba(255, 215, 0, 0.4), transparent),
+            radial-gradient(2px 2px at 40px 70px, rgba(0, 255, 225, 0.3), transparent),
+            radial-gradient(1px 1px at 90px 40px, rgba(255, 107, 53, 0.5), transparent),
+            radial-gradient(1px 1px at 130px 80px, rgba(138, 43, 226, 0.4), transparent);
+          background-repeat: repeat;
+          background-size: 150px 150px;
+          animation: sparkle 15s linear infinite;
+          pointer-events: none;
+          z-index: -1;
+        }
+
+        @keyframes sparkle {
+          0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+          50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
+        }
+
+        .game-container {
+          max-width: 1600px;
+          margin: 0 auto;
+          padding: 20px;
+          display: grid;
+          grid-template-columns: 1fr 2fr 1fr;
+          grid-gap: 25px;
+          min-height: 100vh;
+          position: relative;
+        }
+
+        /* Floating Orbs Animation */
+        .floating-orb {
+          position: absolute;
+          width: 6px;
+          height: 6px;
+          background: var(--border-glow);
+          border-radius: 50%;
+          animation: floatOrb 8s infinite ease-in-out;
+          box-shadow: 0 0 15px var(--border-glow);
+        }
+
+        .floating-orb:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .floating-orb:nth-child(2) { top: 20%; right: 20%; animation-delay: 2s; }
+        .floating-orb:nth-child(3) { bottom: 30%; left: 30%; animation-delay: 4s; }
+        .floating-orb:nth-child(4) { bottom: 10%; right: 10%; animation-delay: 6s; }
+
+        @keyframes floatOrb {
+          0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
+          25% { transform: translateY(-30px) translateX(20px); opacity: 0.8; }
+          50% { transform: translateY(-10px) translateX(-20px); opacity: 0.6; }
+          75% { transform: translateY(-40px) translateX(10px); opacity: 0.9; }
+        }
+
+        /* Left Panel - Enhanced Stats & Inventory */
+        .left-panel {
+          background: 
+            linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(46, 46, 46, 0.9) 100%),
+            radial-gradient(circle at 50% 50%, rgba(0, 255, 225, 0.1) 0%, transparent 70%);
+          border: 3px solid var(--border-glow);
+          border-radius: 20px;
+          padding: 25px;
+          box-shadow: 
+            0 0 30px rgba(0, 255, 225, 0.4),
+            inset 0 0 30px rgba(0, 255, 225, 0.1);
+          backdrop-filter: blur(15px);
+          height: fit-content;
+          position: sticky;
+          top: 20px;
+          transition: all 0.3s ease;
+        }
+
+        .left-panel:hover {
+          transform: translateY(-5px);
+          box-shadow: 
+            0 10px 40px rgba(0, 255, 225, 0.6),
+            inset 0 0 30px rgba(0, 255, 225, 0.15);
+        }
+
+        .warrior-avatar {
+          text-align: center;
+          margin-bottom: 25px;
+          animation: float 4s ease-in-out infinite;
+          position: relative;
+        }
+
+        .warrior-avatar::before {
+          content: '';
+          position: absolute;
+          top: -10px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 100px;
+          height: 100px;
+          background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+          border-radius: 50%;
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        .warrior-avatar .avatar {
+          font-size: 5rem;
+          margin-bottom: 15px;
+          display: block;
+          filter: drop-shadow(0 0 20px var(--primary-gold));
+          animation: glow 3s ease-in-out infinite alternate;
+          position: relative;
+          z-index: 2;
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          25% { transform: translateY(-15px) rotate(2deg); }
+          50% { transform: translateY(-5px) rotate(0deg); }
+          75% { transform: translateY(-20px) rotate(-2deg); }
+        }
+
+        @keyframes glow {
+          from { 
+            filter: drop-shadow(0 0 20px var(--primary-gold));
+            text-shadow: 0 0 20px var(--primary-gold);
+          }
+          to { 
+            filter: drop-shadow(0 0 40px var(--primary-gold));
+            text-shadow: 0 0 40px var(--primary-gold);
+          }
+        }
+
+        .warrior-avatar h3 {
+          font-size: 1.2rem;
+          color: var(--primary-gold);
+          text-shadow: 0 0 10px var(--primary-gold);
+          margin-bottom: 5px;
+        }
+
+        .warrior-avatar p {
+          color: var(--border-glow);
+          font-size: 0.9rem;
+          text-shadow: 0 0 5px var(--border-glow);
+        }
+
+        .difficulty-selector {
+          margin-bottom: 25px;
+        }
+
+        .difficulty-selector h4 {
+          color: var(--primary-gold);
+          margin-bottom: 15px;
+          text-align: center;
+          font-size: 1.1rem;
+          text-shadow: 0 0 10px var(--primary-gold);
+        }
+
+        .difficulty-btn {
+          width: 100%;
+          padding: 12px;
+          margin: 8px 0;
+          border: 2px solid var(--primary-gold);
+          background: 
+            linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.2) 100%),
+            radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+          color: var(--primary-gold);
+          font-family: 'Press Start 2P', monospace;
+          font-size: 11px;
+          cursor: pointer;
+          transition: all 0.4s ease;
+          border-radius: 12px;
+          position: relative;
+          overflow: hidden;
+          text-shadow: 0 0 10px var(--primary-gold);
+        }
+
+        .difficulty-btn::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+          transition: left 0.6s ease;
+        }
+
+        .difficulty-btn:hover::before {
+          left: 100%;
+        }
+
+        .difficulty-btn:hover {
+          background: 
+            linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 215, 0, 0.4) 100%);
+          transform: scale(1.05) translateY(-2px);
+          box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .difficulty-btn.active {
+          background: 
+            linear-gradient(135deg, var(--primary-gold) 0%, #ffed4e 100%);
+          color: black;
+          box-shadow: 
+            0 0 20px var(--primary-gold),
+            inset 0 0 20px rgba(255, 255, 255, 0.2);
+          transform: scale(1.1);
+          text-shadow: none;
+        }
+
+        .health-mana-container {
+          margin-bottom: 25px;
+        }
+
+        .stat-bar {
+          margin-bottom: 20px;
+          position: relative;
+        }
+
+        .stat-label {
+          display: flex;
+          justify-content: space-between;
+          font-size: 13px;
+          margin-bottom: 8px;
+          font-weight: 600;
+          text-shadow: 0 0 5px currentColor;
+        }
+
+        .bar-container {
+          width: 100%;
+          height: 25px;
+          border: 2px solid #333;
+          border-radius: 15px;
+          overflow: hidden;
+          position: relative;
+          background: rgba(0, 0, 0, 0.5);
+          box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .bar-fill {
+          height: 100%;
+          transition: width 0.8s ease;
+          border-radius: 13px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .health-bar { 
+          background: 
+            linear-gradient(90deg, var(--health-green) 0%, #228b22 50%, var(--health-green) 100%),
+            radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        }
+
+        .mana-bar { 
+          background: 
+            linear-gradient(90deg, var(--mana-blue) 0%, #191970 50%, var(--mana-blue) 100%),
+            radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        }
+
+        .bar-fill::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+          animation: shimmer 2.5s infinite;
+        }
+
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+
+        .inventory {
+          background: 
+            linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(20, 20, 20, 0.4) 100%),
+            radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+          padding: 20px;
+          border-radius: 15px;
+          border: 2px solid rgba(255, 215, 0, 0.3);
+          box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+
+        .inventory h3 {
+          color: var(--primary-gold);
+          margin-bottom: 15px;
+          font-size: 16px;
+          text-align: center;
+          text-shadow: 0 0 10px var(--primary-gold);
+        }
+
+        .inventory-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+        }
+
+        .inventory-item {
+          background: 
+            linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%),
+            radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+          padding: 15px;
+          border-radius: 12px;
+          text-align: center;
+          transition: all 0.4s ease;
+          cursor: pointer;
+          border: 2px solid transparent;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .inventory-item::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(45deg, transparent 30%, rgba(255, 215, 0, 0.1) 50%, transparent 70%);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        .inventory-item:hover::before {
+          opacity: 1;
+        }
+
+        .inventory-item:hover {
+          border-color: var(--primary-gold);
+          transform: scale(1.15) translateY(-5px);
+          box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+        }
+
+        .inventory-item .emoji {
+          font-size: 2rem;
+          display: block;
+          margin-bottom: 8px;
+          filter: drop-shadow(0 0 10px currentColor);
+          animation: itemFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes itemFloat {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-3px); }
+        }
+
+        .inventory-item .count {
+          font-size: 11px;
+          color: var(--primary-gold);
+          font-weight: bold;
+          text-shadow: 0 0 5px var(--primary-gold);
+        }
+
+        /* Center Panel - Enhanced Story & Actions */
+        .center-panel {
+          display: flex;
+          flex-direction: column;
+          gap: 25px;
+        }
+
+        .story-container {
+          background: 
+            linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(46, 46, 46, 0.9) 100%),
+            radial-gradient(circle at 50% 50%, rgba(0, 255, 225, 0.1) 0%, transparent 70%);
+          border: 3px solid var(--border-glow);
+          border-radius: 20px;
+          padding: 30px;
+          box-shadow: 
+            0 0 40px rgba(0, 255, 225, 0.5),
+            inset 0 0 40px rgba(0, 255, 225, 0.1);
+          backdrop-filter: blur(20px);
+          flex: 1;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .story-container::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle, rgba(0, 255, 225, 0.1) 0%, transparent 70%);
+          animation: rotate 20s linear infinite;
+          pointer-events: none;
+        }
+
+        .story-container > * {
+          position: relative;
+          z-index: 2;
+        }
+
+        @keyframes rotate {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        .story-title {
+          font-family: 'Cinzel', serif;
+          font-size: 2.5rem;
+          color: var(--primary-gold);
+          text-align: center;
+          margin-bottom: 25px;
+          text-shadow: 
+            0 0 20px var(--primary-gold),
+            0 0 40px var(--primary-gold);
+          font-weight: 700;
+          animation: titleGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+          from { 
+            text-shadow: 
+              0 0 20px var(--primary-gold),
+              0 0 40px var(--primary-gold);
+          }
+          to { 
+            text-shadow: 
+              0 0 30px var(--primary-gold),
+              0 0 60px var(--primary-gold),
+              0 0 80px var(--primary-gold);
+          }
+        }
+
+        .story-text {
+          background: 
+            linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(20, 20, 20, 0.6) 100%),
+            radial-gradient(circle at 30% 30%, rgba(0, 255, 225, 0.1) 0%, transparent 70%);
+          padding: 25px;
+          border-radius: 15px;
+          font-size: 17px;
+          line-height: 1.8;
+          height: 350px;
+          overflow-y: auto;
+          border: 2px solid rgba(0, 255, 225, 0.3);
+          scrollbar-width: thin;
+          scrollbar-color: var(--primary-gold) #333;
+          box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+          margin-bottom: 20px;
+        }
+
+        .story-text::-webkit-scrollbar {
+          width: 12px;
+        }
+
+        .story-text::-webkit-scrollbar-track {
+          background: linear-gradient(135deg, #333 0%, #222 100%);
+          border-radius: 6px;
+        }
+
+        .story-text::-webkit-scrollbar-thumb {
+          background: linear-gradient(135deg, var(--primary-gold) 0%, #ffed4e 100%);
+          border-radius: 6px;
+          box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .message {
+          margin-bottom: 20px;
+          padding: 15px;
+          border-radius: 12px;
+          animation: fadeIn 0.8s ease;
+          position: relative;
+          overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .user-message {
+          background: 
+            linear-gradient(135deg, rgba(255, 121, 198, 0.3) 0%, rgba(255, 121, 198, 0.1) 100%),
+            radial-gradient(circle at 20% 20%, rgba(255, 121, 198, 0.2) 0%, transparent 70%);
+          border-left: 4px solid #ff79c6;
+          color: #ff79c6;
+          text-shadow: 0 0 10px #ff79c6;
+          box-shadow: 0 0 15px rgba(255, 121, 198, 0.3);
+        }
+
+        .ai-message {
+          background: 
+            linear-gradient(135deg, rgba(139, 233, 253, 0.3) 0%, rgba(139, 233, 253, 0.1) 100%),
+            radial-gradient(circle at 20% 20%, rgba(139, 233, 253, 0.2) 0%, transparent 70%);
+          border-left: 4px solid #8be9fd;
+          color: #8be9fd;
+          text-shadow: 0 0 10px #8be9fd;
+          box-shadow: 0 0 15px rgba(139, 233, 253, 0.3);
+        }
+
+        .system-message {
+          background: 
+            linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 215, 0, 0.1) 100%),
+            radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.2) 0%, transparent 70%);
+          border-left: 4px solid var(--primary-gold);
+          color: var(--primary-gold);
+          text-align: center;
+          font-weight: 600;
+          text-shadow: 0 0 15px var(--primary-gold);
+          box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .scene-container {
+          text-align: center;
+        }
+
+        .scene-title {
+          color: var(--primary-gold);
+          font-size: 18px;
+          margin-bottom: 20px;
+          font-weight: 600;
+          text-shadow: 0 0 15px var(--primary-gold);
+        }
+
+        .scene-image {
+          width: 100%;
+          max-width: 500px;
+          max-height: 500px;
+          border: 4px solid var(--border-glow);
+          border-radius: 15px;
+          opacity: 0;
+          transition: opacity 0.8s ease;
+          margin-bottom: 20px;
+          position: relative;
+        }
+
+        .scene-image.loaded {
+          opacity: 1;
+          animation: imageGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes imageGlow {
+          from { 
+            box-shadow: 0 0 20px rgba(0, 255, 225, 0.5);
+            filter: brightness(1) contrast(1);
+          }
+          to { 
+            box-shadow: 
+              0 0 30px rgba(0, 255, 225, 0.8), 
+              0 0 50px rgba(0, 255, 225, 0.4);
+            filter: brightness(1.1) contrast(1.1);
+          }
+        }
+
+        .scene-loading {
+          color: var(--border-glow);
+          font-size: 14px;
+          margin: 25px 0;
+          animation: pulse 2s infinite;
+          text-shadow: 0 0 10px var(--border-glow);
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 0.4; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .actions-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          margin-top: 25px;
+        }
+
+        .action-btn {
+          padding: 18px 25px;
+          border: 3px solid var(--primary-gold);
+          background: 
+            linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.3) 100%),
+            radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.2) 0%, transparent 70%);
+          color: var(--primary-gold);
+          font-family: 'Cinzel', serif;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.4s ease;
+          border-radius: 15px;
+          position: relative;
+          overflow: hidden;
+          text-shadow: 0 0 10px var(--primary-gold);
+        }
+
+        .action-btn::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.4), transparent);
+          transition: left 0.6s ease;
+        }
+
+        .action-btn:hover::before {
+          left: 100%;
+        }
+
+        .action-btn:hover {
+          background: 
+            linear-gradient(135deg, rgba(255, 215, 0, 0.4) 0%, rgba(255, 215, 0, 0.6) 100%);
+          transform: translateY(-5px) scale(1.05);
+          box-shadow: 
+            0 10px 30px rgba(255, 215, 0, 0.5),
+            inset 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn:active {
+          transform: translateY(-2px) scale(1.02);
+        }
+
+        .improvise-section {
+          grid-column: 1 / -1;
+          margin-top: 15px;
+        }
+
+        .improvise-input {
+          width: 100%;
+          padding: 18px;
+          border: 3px solid #333;
+          border-radius: 12px;
+          background: 
+            linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(20, 20, 20, 0.6) 100%),
+            radial-gradient(circle at 30% 30%, rgba(0, 255, 225, 0.1) 0%, transparent 70%);
+          color: #fff;
+          font-family: 'Cinzel', serif;
+          font-size: 15px;
+          transition: all 0.3s ease;
+          box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .improvise-input:focus {
+          outline: none;
+          border-color: var(--border-glow);
+          box-shadow: 
+            0 0 20px rgba(0, 255, 225, 0.4),
+            inset 0 0 20px rgba(0, 255, 225, 0.1);
+          background: 
+            linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(20, 20, 20, 0.8) 100%),
+            radial-gradient(circle at 30% 30%, rgba(0, 255, 225, 0.2) 0%, transparent 70%);
+        }
+
+        .improvise-btn {
+          width: 100%;
+          margin-top: 15px;
+          padding: 18px;
+          border: 3px solid var(--border-glow);
+          background: 
+            linear-gradient(135deg, rgba(0, 255, 225, 0.1) 0%, rgba(0, 255, 225, 0.3) 100%),
+            radial-gradient(circle at 30% 30%, rgba(0, 255, 225, 0.2) 0%, transparent 70%);
+          color: var(--border-glow);
+          font-family: 'Cinzel', serif;
+          font-weight: 600;
+          cursor: pointer;
+          border-radius: 15px;
+          transition: all 0.4s ease;
+          position: relative;
+          overflow: hidden;
+          text-shadow: 0 0 10px var(--border-glow);
+        }
+
+        .improvise-btn::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(0, 255, 225, 0.4), transparent);
+          transition: left 0.6s ease;
+        }
+
+        .improvise-btn:hover::before {
+          left: 100%;
+        }
+
+        .improvise-btn:hover {
+          background: 
+            linear-gradient(135deg, rgba(0, 255, 225, 0.4) 0%, rgba(0, 255, 225, 0.6) 100%);
+          transform: translateY(-5px) scale(1.02);
+          box-shadow: 
+            0 10px 30px rgba(0, 255, 225, 0.5),
+            inset 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Right Panel - Enhanced Scene Visualization */
+        .right-panel {
+          background: 
+            linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(46, 46, 46, 0.9) 100%),
+            radial-gradient(circle at 50% 50%, rgba(220, 20, 60, 0.1) 0%, transparent 70%);
+          border: 3px solid var(--secondary-red);
+          border-radius: 20px;
+          padding: 25px;
+          box-shadow: 
+            0 0 30px rgba(220, 20, 60, 0.4),
+            inset 0 0 30px rgba(220, 20, 60, 0.1);
+          backdrop-filter: blur(15px);
+          height: fit-content;
+          position: sticky;
+          top: 20px;
+          transition: all 0.3s ease;
+        }
+
+        .right-panel:hover {
+          transform: translateY(-5px);
+          box-shadow: 
+            0 10px 40px rgba(220, 20, 60, 0.6),
+            inset 0 0 30px rgba(220, 20, 60, 0.15);
+        }
+
+        .dragon-health {
+          margin-top: 20px;
+          padding: 20px;
+          background: 
+            linear-gradient(135deg, rgba(220, 20, 60, 0.3) 0%, rgba(220, 20, 60, 0.1) 100%),
+            radial-gradient(circle at 50% 50%, rgba(255, 107, 53, 0.2) 0%, transparent 70%);
+          border-radius: 15px;
+          border: 2px solid var(--secondary-red);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .dragon-health::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle, rgba(255, 107, 53, 0.1) 0%, transparent 70%);
+          animation: dragonAura 15s linear infinite;
+          pointer-events: none;
+        }
+
+        .dragon-health > * {
+          position: relative;
+          z-index: 2;
+        }
+
+        @keyframes dragonAura {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(-360deg); }
+        }
+
+        .dragon-avatar {
+          font-size: 4rem;
+          margin-bottom: 15px;
+          text-align: center;
+          animation: dragonFloat 3s ease-in-out infinite;
+          filter: drop-shadow(0 0 25px var(--secondary-red));
+          display: block;
+        }
+
+        @keyframes dragonFloat {
+          0%, 100% { 
+            transform: translateY(0px) rotate(-3deg) scale(1); 
+            filter: drop-shadow(0 0 25px var(--secondary-red));
+          }
+          25% { 
+            transform: translateY(-12px) rotate(2deg) scale(1.05); 
+            filter: drop-shadow(0 0 35px var(--dragon-fire));
+          }
+          50% { 
+            transform: translateY(-5px) rotate(0deg) scale(1.02); 
+            filter: drop-shadow(0 0 30px var(--secondary-red));
+          }
+          75% { 
+            transform: translateY(-15px) rotate(-2deg) scale(1.03); 
+            filter: drop-shadow(0 0 40px var(--dragon-fire));
+          }
+        }
+
+        .dragon-health h4 {
+          color: var(--secondary-red);
+          margin-bottom: 15px;
+          text-align: center;
+          text-shadow: 0 0 15px var(--secondary-red);
+          font-size: 1.1rem;
+        }
+
+        .dragon-health .stat-bar .bar-fill {
+          background: 
+            linear-gradient(90deg, var(--secondary-red) 0%, #8b0000 50%, var(--dragon-fire) 100%),
+            radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+          box-shadow: inset 0 0 10px rgba(255, 107, 53, 0.5);
+        }
+
+        .loading-indicator {
+          text-align: center;
+          color: var(--border-glow);
+          font-size: 14px;
+          margin: 15px 0;
+          animation: pulse 2s infinite;
+          text-shadow: 0 0 10px var(--border-glow);
+        }
+
+        /* Enhanced Game Over Screen */
+        .game-over-screen {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.95) 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.8s ease;
+          backdrop-filter: blur(10px);
+        }
+
+        .game-over-screen.visible {
+          opacity: 1;
+          visibility: visible;
+        }
+
+        .game-over-screen::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(220, 20, 60, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, rgba(0, 255, 225, 0.05) 0%, transparent 50%);
+          animation: victoryAura 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes victoryAura {
+          0% { opacity: 0.3; transform: scale(1); }
+          100% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .game-over-content {
+          background: 
+            linear-gradient(135deg, var(--card-bg) 0%, #2a2a2a 50%, var(--card-bg) 100%),
+            radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+          padding: 50px;
+          border-radius: 25px;
+          border: 4px solid var(--primary-gold);
+          text-align: center;
+          max-width: 600px;
+          box-shadow: 
+            0 0 60px rgba(255, 215, 0, 0.6),
+            inset 0 0 40px rgba(255, 215, 0, 0.1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .game-over-content::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%);
+          animation: rotate 20s linear infinite;
+          pointer-events: none;
+        }
+
+        .game-over-content > * {
+          position: relative;
+          z-index: 2;
+        }
+
+        .ending-emoji {
+          font-size: 6rem;
+          margin-bottom: 25px;
+          animation: victoryBounce 2s ease infinite;
+          filter: drop-shadow(0 0 30px currentColor);
+        }
+
+        @keyframes victoryBounce {
+          0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
+          25% { transform: translateY(-15px) scale(1.1) rotate(5deg); }
+          50% { transform: translateY(-5px) scale(1.05) rotate(0deg); }
+          75% { transform: translateY(-20px) scale(1.08) rotate(-5deg); }
+        }
+
+        .ending-title {
+          color: var(--primary-gold);
+          margin-bottom: 20px;
+          font-size: 2.5rem;
+          text-shadow: 
+            0 0 20px var(--primary-gold),
+            0 0 40px var(--primary-gold);
+          animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        .ending-description {
+          margin-bottom: 30px;
+          font-size: 1.2rem;
+          line-height: 1.6;
+          color: var(--border-glow);
+          text-shadow: 0 0 10px var(--border-glow);
+        }
+
+        .restart-btn {
+          padding: 20px 40px;
+          margin-top: 25px;
+          border: 3px solid var(--primary-gold);
+          background: 
+            linear-gradient(135deg, var(--primary-gold) 0%, #ffed4e 100%);
+          color: black;
+          font-family: 'Cinzel', serif;
+          font-weight: 600;
+          font-size: 16px;
+          cursor: pointer;
+          border-radius: 15px;
+          transition: all 0.4s ease;
+          position: relative;
+          overflow: hidden;
+          text-shadow: none;
+        }
+
+        .restart-btn::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+          transition: left 0.6s ease;
+        }
+
+        .restart-btn:hover::before {
+          left: 100%;
+        }
+
+        .restart-btn:hover {
+          background: 
+            linear-gradient(135deg, transparent 0%, rgba(255, 215, 0, 0.1) 100%);
+          color: var(--primary-gold);
+          transform: scale(1.1) translateY(-3px);
+          box-shadow: 
+            0 10px 30px rgba(255, 215, 0, 0.5),
+            inset 0 0 20px rgba(255, 215, 0, 0.2);
+          text-shadow: 0 0 15px var(--primary-gold);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+          .game-container {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto auto;
+            max-width: 900px;
+          }
+          
+          .left-panel, .right-panel {
+            position: static;
+          }
+          
+          .actions-container {
+            grid-template-columns: 1fr;
+          }
+
+          .story-title {
+            font-size: 2rem;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .game-container {
+            padding: 15px;
+            gap: 15px;
+          }
+          
+          .story-title {
+            font-size: 1.8rem;
+          }
+          
+          .story-text {
+            height: 280px;
+            font-size: 15px;
+            padding: 20px;
+          }
+
+          .warrior-avatar .avatar {
+            font-size: 4rem;
+          }
+
+          .dragon-avatar {
+            font-size: 3rem;
+          }
+
+          .ending-emoji {
+            font-size: 4rem;
+          }
+
+          .ending-title {
+            font-size: 2rem;
+          }
+
+          .game-over-content {
+            padding: 30px;
+            margin: 20px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .inventory-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .actions-container {
+            gap: 15px;
+          }
+
+          .action-btn, .improvise-btn {
+            padding: 15px 20px;
+            font-size: 14px;
+          }
+
+          .story-text {
+            height: 250px;
+            font-size: 14px;
+          }
+        }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <!-- Left Panel - Character Stats & Inventory -->
+    <div class="left-panel">
+      <div class="warrior-avatar">
+        <span class="avatar" id="warrior-emoji">🛡️</span>
+        <h3 id="warrior-name">Brave Warrior</h3>
+        <p id="warrior-level">Level 1</p>
+      </div>
+
+      <div class="difficulty-selector">
+        <h4 style="color: var(--primary-gold); margin-bottom: 10px;">Difficulty</h4>
+        <button class="difficulty-btn active" data-difficulty="easy">EASY ⚡</button>
+        <button class="difficulty-btn" data-difficulty="normal">NORMAL ⚔️</button>
+        <button class="difficulty-btn" data-difficulty="hard">HARD 🔥</button>
+      </div>
+
+      <div class="health-mana-container">
+        <div class="stat-bar">
+          <div class="stat-label">
+            <span>❤️ Health</span>
+            <span id="health-text">100/100</span>
+          </div>
+          <div class="bar-container">
+            <div class="bar-fill health-bar" id="health-bar" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="stat-bar">
+          <div class="stat-label">
+            <span>🔮 Mana</span>
+            <span id="mana-text">50/50</span>
+          </div>
+          <div class="bar-container">
+            <div class="bar-fill mana-bar" id="mana-bar" style="width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="inventory">
+        <h3>🎒 Inventory</h3>
+        <div class="inventory-grid" id="inventory-grid">
+          <div class="inventory-item" data-item="sword">
+            <span class="emoji">⚔️</span>
+            <div class="count">1</div>
+          </div>
+          <div class="inventory-item" data-item="shield">
+            <span class="emoji">🛡️</span>
+            <div class="count">1</div>
+          </div>
+          <div class="inventory-item" data-item="potion">
+            <span class="emoji">🧪</span>
+            <div class="count">3</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Panel - Story & Actions -->
+    <div class="center-panel">
+      <div class="story-container">
+        <h1 class="story-title">⚔️ Dragon Warrior Chronicles ⚔️</h1>
+        <div class="story-text" id="story-display"></div>
+        <div class="loading-indicator" id="loading" style="display: none;">🔄 The tale unfolds...</div>
+			   <div class="scene-container">
+        <h3 class="scene-title">🖼️ Scene Vision</h3>
+        <div class="scene-loading" id="scene-loading" style="display: none;">🎨 Painting the scene...</div>
+        <img class="scene-image" id="scene-image" alt="Game Scene">
+		</div>
+
+      </div>
+
+      <div class="actions-container">
+        <button class="action-btn" id="action1" onclick="takeAction('attack')">
+          ⚔️ Attack with Sword
+        </button>
+        <button class="action-btn" id="action2" onclick="takeAction('defend')">
+          🛡️ Raise Shield
+        </button>
+        
+        <div class="improvise-section">
+          <input type="text" class="improvise-input" id="improvise-input" 
+                 placeholder="✨ Improvise your own action...">
+          <button class="improvise-btn" onclick="improviseAction()">
+            🎭 Take Creative Action
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel - Scene Visualization -->
+    <div class="right-panel">
+     
+        
+        <div class="dragon-health">
+          <div class="dragon-avatar">🐉</div>
+          <h4 style="color: var(--secondary-red); margin-bottom: 10px;">Ancient Dragon</h4>
+          <div class="stat-bar">
+            <div class="stat-label">
+              <span>🔥 Dragon Health</span>
+              <span id="dragon-health-text">150/150</span>
+            </div>
+            <div class="bar-container">
+              <div class="bar-fill" id="dragon-health-bar" 
+                   style="width: 100%; background: linear-gradient(90deg, var(--secondary-red), #8b0000);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <!-- Game Over Screen -->
+  <div class="game-over-screen" id="game-over">
+    <div class="game-over-content">
+      <div class="ending-emoji" id="ending-emoji">👑</div>
+      <h2 id="ending-title" style="color: var(--primary-gold); margin-bottom: 15px;">Victory!</h2>
+      <p id="ending-description" style="margin-bottom: 20px;">You have defeated the ancient dragon and saved the realm!</p>
+      <button class="restart-btn" onclick="startNewGame()">🔄 New Adventure</button>
+    </div>
+  </div>
+
+  <script>
+  // Game State
+let gameState = {
+  difficulty: 'easy',
+  playerHealth: 100,
+  playerMaxHealth: 100,
+  playerMana: 50,
+  playerMaxMana: 50,
+  dragonHealth: 150,
+  dragonMaxHealth: 150,
+  inventory: {
+    sword: 1,
+    shield: 1,
+    potion: 3,
+    elixir: 2,
+    gold: 0,
+    magic_scroll: 0,
+    dragon_scale: 0,
+    ancient_relic: 0,
+    crystal_shard: 0,
+    enchanted_ring: 0,
+    fire_gem: 0,
+    ice_crystal: 0,
+    shadow_cloak: 0,
+    dragon_tooth: 0,
+    mystic_orb: 0,
+    holy_water: 0,
+    cursed_amulet: 0
+  },
+  storyHistory: [],
+  turnCount: 0,
+  gameEnded: false,
+  lastImageScene: null
+};
+
+// Difficulty Settings
+const difficultySettings = {
+  easy: {
+    playerHealth: 120,
+    playerMana: 60,
+    dragonHealth: 120,
+    potions: 5,
+    elixirs: 3,
+    emoji: '🛡️'
+  },
+  normal: {
+    playerHealth: 100,
+    playerMana: 50,
+    dragonHealth: 150,
+    potions: 3,
+    elixirs: 2,
+    emoji: '⚔️'
+  },
+  hard: {
+    playerHealth: 80,
+    playerMana: 40,
+    dragonHealth: 200,
+    potions: 2,
+    elixirs: 1,
+    emoji: '🔥'
+  }
+};
+
+// DOM Elements
+const storyDisplay = document.getElementById('story-display');
+const healthBar = document.getElementById('health-bar');
+const healthText = document.getElementById('health-text');
+const manaBar = document.getElementById('mana-bar');
+const manaText = document.getElementById('mana-text');
+const dragonHealthBar = document.getElementById('dragon-health-bar');
+const dragonHealthText = document.getElementById('dragon-health-text');
+const sceneImage = document.getElementById('scene-image');
+const sceneLoading = document.getElementById('scene-loading');
+const loading = document.getElementById('loading');
+const gameOverScreen = document.getElementById('game-over');
+const improviseInput = document.getElementById('improvise-input');
+
+// Initialize Game
+function initializeGame() {
+  addSystemMessage("🌟 Welcome, brave warrior! You stand before the ancient dragon's lair. Your destiny awaits...");
+  addSystemMessage("The massive dragon emerges from the shadows, eyes glowing with ancient fury. What will you do?");
+  updateDisplay();
+  
+  // Start session with backend
+  fetch('/start_session', { 
+    method: 'POST',
+    credentials: 'include'
+  });
+}
+
+// Difficulty Selection
+document.querySelectorAll('.difficulty-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (gameState.gameEnded) return;
+    
+    document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    const difficulty = btn.dataset.difficulty;
+    setDifficulty(difficulty);
+  });
+});
+
+function setDifficulty(difficulty) {
+  gameState.difficulty = difficulty;
+  const settings = difficultySettings[difficulty];
+  
+  gameState.playerHealth = settings.playerHealth;
+  gameState.playerMaxHealth = settings.playerHealth;
+  gameState.playerMana = settings.playerMana;
+  gameState.playerMaxMana = settings.playerMana;
+  gameState.dragonHealth = settings.dragonHealth;
+  gameState.dragonMaxHealth = settings.dragonHealth;
+  gameState.inventory.potion = settings.potions;
+  gameState.inventory.elixir = settings.elixirs;
+  
+  document.getElementById('warrior-emoji').textContent = settings.emoji;
+  updateDisplay();
+  
+  addSystemMessage(`⚡ Difficulty set to ${difficulty.toUpperCase()}! Stats adjusted.`);
+}
+
+// Action Handlers
+async function takeAction(actionType) {
+  if (gameState.gameEnded) return;
+  
+  let actionText = '';
+  switch(actionType) {
+    case 'attack':
+      actionText = 'I attack the dragon with my sword!';
+      break;
+    case 'defend':
+      actionText = 'I raise my shield and prepare to defend!';
+      break;
+  }
+  
+  await processAction(actionText);
+}
+
+async function improviseAction() {
+  if (gameState.gameEnded) return;
+  
+  const action = improviseInput.value.trim();
+  if (!action) return;
+  
+  improviseInput.value = '';
+  await processAction(action);
+}
+
+// Process Action with Backend
+async function processAction(actionText) {
+  addMessage(actionText, 'user');
+  showLoading(true);
+  
+  try {
+    const response = await fetch('/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        prompt: actionText,
+        gameState: gameState 
+      }),
+      credentials: 'include'
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Server error');
+    }
+
+    if (data.story) {
+      addMessage(data.story, 'ai');
+      
+      // Process narrative for inventory updates FIRST
+      processNarrativeInventory(data.story);
+      
+      // Then process combat and other game state changes
+      processGameStateChanges(data.story, actionText);
+      
+      if (data.needs_visual) {
+        generateScene(data.story);
+      }
+      
+      // Check for game ending
+      checkGameEnding();
+    }
+  } catch (err) {
+    addMessage(`⚠️ ERROR: ${err.message}`, 'error');
+  } finally {
+    showLoading(false);
+  }
+}
+
+// Process Narrative for Inventory Updates
+// Enhanced Process Game State Changes
+function processGameStateChanges(aiResponse, playerAction) {
+  const response = aiResponse.toLowerCase();
+  const action = playerAction.toLowerCase();
+  
+  // Parse AI response for specific stat changes
+  const parsedStats = parseAIResponseStats(aiResponse);
+  
+  // Apply parsed health changes
+  if (parsedStats.playerHealthChange !== 0) {
+    gameState.playerHealth = Math.max(0, Math.min(gameState.playerMaxHealth, 
+      gameState.playerHealth + parsedStats.playerHealthChange));
+    
+    if (parsedStats.playerHealthChange > 0) {
+      addSystemMessage(`💚 Health restored: +${parsedStats.playerHealthChange}`);
+    } else if (parsedStats.playerHealthChange < 0) {
+	     addSystemMessage(`💔 Health lost: ${Math.abs(parsedStats.playerHealthChange)}`);
+    }
+  }
+  
+  // Apply parsed mana changes
+  if (parsedStats.playerManaChange !== 0) {
+    gameState.playerMana = Math.max(0, Math.min(gameState.playerMaxMana, 
+      gameState.playerMana + parsedStats.playerManaChange));
+    
+    if (parsedStats.playerManaChange > 0) {
+      addSystemMessage(`🔮 Mana restored: +${parsedStats.playerManaChange}`);
+    } else if (parsedStats.playerManaChange < 0) {
+      addSystemMessage(`⚡ Mana used: ${Math.abs(parsedStats.playerManaChange)}`);
+    }
+  }
+  
+  // Apply parsed dragon health changes
+  if (parsedStats.dragonHealthChange !== 0) {
+    gameState.dragonHealth = Math.max(0, Math.min(gameState.dragonMaxHealth, 
+      gameState.dragonHealth + parsedStats.dragonHealthChange));
+    
+    if (parsedStats.dragonHealthChange < 0) {
+      addSystemMessage(`🐉 Dragon damaged: ${Math.abs(parsedStats.dragonHealthChange)}`);
+    }
+  }
+  
+  // Apply max health/mana changes
+  if (parsedStats.playerMaxHealthChange !== 0) {
+    gameState.playerMaxHealth += parsedStats.playerMaxHealthChange;
+    gameState.playerHealth = Math.min(gameState.playerHealth, gameState.playerMaxHealth);
+    addSystemMessage(`💪 Max health changed: ${parsedStats.playerMaxHealthChange > 0 ? '+' : ''}${parsedStats.playerMaxHealthChange}`);
+  }
+  
+  if (parsedStats.playerMaxManaChange !== 0) {
+    gameState.playerMaxMana += parsedStats.playerMaxManaChange;
+    gameState.playerMana = Math.min(gameState.playerMana, gameState.playerMaxMana);
+    addSystemMessage(`🧙 Max mana changed: ${parsedStats.playerMaxManaChange > 0 ? '+' : ''}${parsedStats.playerMaxManaChange}`);
+  }
+  
+  // Apply inventory changes from parsed stats
+  Object.entries(parsedStats.inventoryChanges).forEach(([item, change]) => {
+    if (gameState.inventory.hasOwnProperty(item)) {
+      gameState.inventory[item] = Math.max(0, gameState.inventory[item] + change);
+      const itemName = item.replace(/_/g, ' ').toUpperCase();
+      if (change > 0) {
+        addSystemMessage(`📦 ${itemName} gained: +${change}`);
+      } else if (change < 0) {
+        addSystemMessage(`📦 ${itemName} used: ${Math.abs(change)}`);
+      }
+    }
+  });
+  
+  // Fallback to original logic if no specific numbers were parsed
+  if (parsedStats.playerHealthChange === 0 && parsedStats.playerManaChange === 0 && 
+      parsedStats.dragonHealthChange === 0) {
+    
+    // Original combat logic with critical damage detection
+    if (action.includes('attack') || action.includes('strike') || action.includes('sword')) {
+      let damage = Math.floor(Math.random() * 25) + 15; // 15-40 damage
+      
+      // Check for critical hit mentions
+      if (response.includes('critical') || response.includes('devastating') || 
+          response.includes('massive') || response.includes('overwhelming')) {
+        damage = Math.floor(damage * 1.5); // 50% more damage
+        addSystemMessage(`⚡ CRITICAL HIT! Extra damage dealt!`);
+      }
+      
+      gameState.dragonHealth = Math.max(0, gameState.dragonHealth - damage);
+      gameState.playerMana = Math.max(0, gameState.playerMana - 5);
+      
+      // Dragon counter-attack if still alive
+      if (gameState.dragonHealth > 0) {
+        let dragonDamage = Math.floor(Math.random() * 20) + 10; // 10-30 damage
+        
+        // Check for dragon's powerful attacks
+        if (response.includes('fury') || response.includes('rage') || 
+            response.includes('powerful') || response.includes('devastating')) {
+          dragonDamage = Math.floor(dragonDamage * 1.3);
+          addSystemMessage(`🔥 Dragon's fury unleashed!`);
+        }
+        
+        gameState.playerHealth = Math.max(0, gameState.playerHealth - dragonDamage);
+      }
+    }
+    
+    if (action.includes('defend') || action.includes('shield') || action.includes('block')) {
+      // Reduced damage when defending
+      let dragonDamage = Math.floor(Math.random() * 10) + 5; // 5-15 damage
+      
+      // Check for perfect defense
+      if (response.includes('perfect') || response.includes('flawless') || 
+          response.includes('masterful') || response.includes('expertly')) {
+        dragonDamage = Math.floor(dragonDamage * 0.5);
+        addSystemMessage(`🛡️ Perfect defense! Damage minimized!`);
+      }
+      
+      gameState.playerHealth = Math.max(0, gameState.playerHealth - dragonDamage);
+      gameState.playerMana = Math.min(gameState.playerMaxMana, gameState.playerMana + 5);
+    }
+    
+    // Magic actions
+    if (action.includes('magic') || action.includes('spell') || action.includes('cast')) {
+      if (gameState.playerMana >= 10) {
+        gameState.playerMana -= 10;
+        let magicDamage = Math.floor(Math.random() * 35) + 20; // 20-55 damage
+        
+        // Check for powerful magic
+        if (response.includes('powerful') || response.includes('ancient') || 
+            response.includes('devastating') || response.includes('arcane')) {
+          magicDamage = Math.floor(magicDamage * 1.4);
+          addSystemMessage(`✨ POWERFUL MAGIC! Spell amplified!`);
+        }
+        
+        gameState.dragonHealth = Math.max(0, gameState.dragonHealth - magicDamage);
+      } else {
+        addSystemMessage("💔 Not enough mana to cast spell!");
+      }
+    }
+  }
+  
+  // Item usage detection
+  if (action.includes('potion') || action.includes('heal')) {
+    if (gameState.inventory.potion > 0) {
+      gameState.inventory.potion--;
+      if (parsedStats.playerHealthChange === 0) { // Only if not already parsed
+        const healAmount = Math.floor(Math.random() * 30) + 20; // 20-50 healing
+        gameState.playerHealth = Math.min(gameState.playerMaxHealth, gameState.playerHealth + healAmount);
+        addSystemMessage(`🧪 Potion used! Health restored: +${healAmount}`);
+      }
+    }
+  }
+  
+  if (action.includes('elixir') || action.includes('mana')) {
+    if (gameState.inventory.elixir > 0) {
+      gameState.inventory.elixir--;
+      if (parsedStats.playerManaChange === 0) { // Only if not already parsed
+        const manaAmount = Math.floor(Math.random() * 25) + 15; // 15-40 mana
+        gameState.playerMana = Math.min(gameState.playerMaxMana, gameState.playerMana + manaAmount);
+        addSystemMessage(`🔮 Elixir used! Mana restored: +${manaAmount}`);
+      }
+    }
+  }
+  
+  // Using magical items for enhanced effects
+  if (action.includes('scroll') && gameState.inventory.magic_scroll > 0) {
+    gameState.inventory.magic_scroll--;
+    if (parsedStats.dragonHealthChange === 0) { // Only if not already parsed
+      const scrollDamage = Math.floor(Math.random() * 40) + 30; // 30-70 damage
+      gameState.dragonHealth = Math.max(0, gameState.dragonHealth - scrollDamage);
+      addSystemMessage(`📜 Magic scroll used! Dragon damaged: ${scrollDamage}`);
+    }
+  }
+  
+  if (action.includes('relic') && gameState.inventory.ancient_relic > 0) {
+    if (parsedStats.playerManaChange === 0) { // Only if not already parsed
+      gameState.playerMana = Math.min(gameState.playerMaxMana, gameState.playerMana + 20);
+      addSystemMessage("✨ Ancient relic channels mystical energy! +20 mana");
+    }
+  }
+  
+  // Creative actions have random effects only if no specific changes were parsed
+  if (!action.includes('attack') && !action.includes('defend') && 
+      !action.includes('potion') && !action.includes('elixir') && 
+      parsedStats.playerHealthChange === 0 && parsedStats.playerManaChange === 0 && 
+      parsedStats.dragonHealthChange === 0) {
+    
+    const randomEffect = Math.random();
+    if (randomEffect < 0.3) {
+      // Positive effect
+      gameState.playerMana = Math.min(gameState.playerMaxMana, gameState.playerMana + 10);
+      if (Math.random() < 0.5) {
+        gameState.inventory.gold += Math.floor(Math.random() * 5) + 1;
+      }
+    } else if (randomEffect < 0.6) {
+      // Neutral effect - minor dragon damage
+      const creativeDamage = Math.floor(Math.random() * 15) + 5;
+      gameState.dragonHealth = Math.max(0, gameState.dragonHealth - creativeDamage);
+    } else {
+      // Risky effect
+      const risk = Math.floor(Math.random() * 15) + 5;
+      gameState.playerHealth = Math.max(0, gameState.playerHealth - risk);
+    }
+  }
+  
+  gameState.turnCount++;
+  updateDisplay();
+}
+
+// Helper function to parse AI response for specific stat changes
+function parseAIResponseStats(aiResponse) {
+  const response = aiResponse.toLowerCase();
+  const stats = {
+    playerHealthChange: 0,
+    playerManaChange: 0,
+    dragonHealthChange: 0,
+    playerMaxHealthChange: 0,
+    playerMaxManaChange: 0,
+    inventoryChanges: {}
+  };
+  
+  // Parse player health changes
+  const healthPatterns = [
+    /(?:you\s+)?(?:take|lose|suffer|receive)\s+(\d+)\s+(?:points?\s+of\s+)?damage/gi,
+    /(?:health|hp)\s*[-−]\s*(\d+)/gi,
+    /damage\s*[:\s]\s*(\d+)/gi,
+    /(\d+)\s+damage\s+(?:to\s+)?(?:you|yourself|player)/gi,
+    /lose\s+(\d+)\s+(?:health|hp|hit\s+points?)/gi,
+    /(?:you\s+)?(?:heal|restore|recover|gain)\s+(\d+)\s+(?:health|hp|hit\s+points?)/gi,
+    /(?:health|hp)\s*[+]\s*(\d+)/gi,
+    /(\d+)\s+(?:health|hp)\s+(?:restored|healed|recovered|gained)/gi
+  ];
+  
+  healthPatterns.forEach(pattern => {
+    const matches = [...response.matchAll(pattern)];
+    matches.forEach(match => {
+      const value = parseInt(match[1]);
+      if (pattern.source.includes('heal') || pattern.source.includes('restore') || 
+          pattern.source.includes('recover') || pattern.source.includes('gain') || 
+          pattern.source.includes('[+]')) {
+        stats.playerHealthChange -= value;
+      } else {
+        stats.playerHealthChange += value;
+      }
+    });
+  });
+  
+  // Parse mana changes
+  const manaPatterns = [
+    /(?:you\s+)?(?:lose|use|spend|consume)\s+(\d+)\s+(?:mana|magical?\s+energy)/gi,
+    /(?:mana|magical?\s+energy)\s*[-−]\s*(\d+)/gi,
+    /(\d+)\s+mana\s+(?:used|consumed|spent|lost)/gi,
+    /(?:you\s+)?(?:gain|restore|recover)\s+(\d+)\s+(?:mana|magical?\s+energy)/gi,
+    /(?:mana|magical?\s+energy)\s*[+]\s*(\d+)/gi,
+    /(\d+)\s+mana\s+(?:restored|recovered|gained)/gi,
+    /mana\s+(?:restored|recovered|gained)\s*[:\s]\s*(\d+)/gi
+  ];
+  
+  manaPatterns.forEach(pattern => {
+    const matches = [...response.matchAll(pattern)];
+    matches.forEach(match => {
+      const value = parseInt(match[1]);
+      if (pattern.source.includes('gain') || pattern.source.includes('restore') || 
+          pattern.source.includes('recover') || pattern.source.includes('[+]')) {
+        stats.playerManaChange += value;
+      } else {
+        stats.playerManaChange -= value;
+      }
+    });
+  });
+  
+  // Parse dragon health changes
+  const dragonPatterns = [
+    /(?:dragon\s+)?(?:takes?|loses?|suffers?)\s+(\d+)\s+(?:points?\s+of\s+)?damage/gi,
+    /(?:deal|dealt|inflict|cause)\s+(\d+)\s+damage\s+(?:to\s+)?(?:the\s+)?dragon/gi,
+    /dragon\s+(?:health|hp)\s*[-−]\s*(\d+)/gi,
+    /(\d+)\s+damage\s+(?:to\s+)?(?:the\s+)?dragon/gi,
+    /dragon.*?(\d+)\s+(?:points?\s+of\s+)?damage/gi,
+    /strike.*?(\d+)\s+damage/gi,
+    /hit.*?(\d+)\s+damage/gi
+  ];
+  
+  dragonPatterns.forEach(pattern => {
+    const matches = [...response.matchAll(pattern)];
+    matches.forEach(match => {
+      const value = parseInt(match[1]);
+      stats.dragonHealthChange -= value; // Dragon takes damage (negative change)
+    });
+  });
+  
+  // Parse max health/mana changes
+  const maxHealthPatterns = [
+    /(?:max|maximum)\s+(?:health|hp)\s*[+]\s*(\d+)/gi,
+    /(?:health|hp)\s+(?:max|maximum)\s*[+]\s*(\d+)/gi,
+    /(\d+)\s+(?:max|maximum)\s+(?:health|hp)/gi
+  ];
+  
+  maxHealthPatterns.forEach(pattern => {
+    const matches = [...response.matchAll(pattern)];
+    matches.forEach(match => {
+      stats.playerMaxHealthChange += parseInt(match[1]);
+    });
+  });
+  
+  const maxManaPatterns = [
+    /(?:max|maximum)\s+(?:mana|magical?\s+energy)\s*[+]\s*(\d+)/gi,
+    /(?:mana|magical?\s+energy)\s+(?:max|maximum)\s*[+]\s*(\d+)/gi,
+    /(\d+)\s+(?:max|maximum)\s+(?:mana|magical?\s+energy)/gi
+  ];
+  
+  maxManaPatterns.forEach(pattern => {
+    const matches = [...response.matchAll(pattern)];
+    matches.forEach(match => {
+      stats.playerMaxManaChange += parseInt(match[1]);
+    });
+  });
+  
+  // Parse inventory changes
+  const inventoryItems = [
+    'potion', 'elixir', 'gold', 'magic_scroll', 'dragon_scale', 'ancient_relic',
+    'crystal_shard', 'enchanted_ring', 'fire_gem', 'ice_crystal', 'shadow_cloak',
+    'dragon_tooth', 'mystic_orb', 'holy_water', 'cursed_amulet'
+  ];
+  
+  inventoryItems.forEach(item => {
+    const itemName = item.replace(/_/g, '\\s+');
+    const patterns = [
+      new RegExp(`(?:find|discover|gain|acquire|pick\\s+up|collect)\\s+(?:a\\s+|an\\s+)?(\\d+)?\\s*${itemName}`, 'gi'),
+      new RegExp(`${itemName}\\s*[+]\\s*(\\d+)`, 'gi'),
+      new RegExp(`(\\d+)\\s+${itemName}\\s+(?:found|discovered|gained|acquired)`, 'gi'),
+      new RegExp(`(?:use|consume|drink)\\s+(?:a\\s+|an\\s+)?(\\d+)?\\s*${itemName}`, 'gi'),
+      new RegExp(`${itemName}\\s*[-−]\\s*(\\d+)`, 'gi'),
+      new RegExp(`(\\d+)\\s+${itemName}\\s+(?:used|consumed|lost)`, 'gi')
+    ];
+    
+    patterns.forEach((pattern, index) => {
+      const matches = [...response.matchAll(pattern)];
+      matches.forEach(match => {
+        let value = parseInt(match[1]) || 1;
+        if (index >= 3) { // Use/consume patterns
+          value = -value;
+        }
+        stats.inventoryChanges[item] = (stats.inventoryChanges[item] || 0) + value;
+      });
+    });
+  });
+  
+  return stats;
+}
+// Add this function somewhere in your code (before processAction function)
+function processNarrativeInventory(aiResponse) {
+  const response = aiResponse.toLowerCase();
+  
+  // Check for item discoveries/gains
+  const itemPatterns = {
+    gold: /(?:find|discover|gain|acquire|collect).*?(\d+).*?(?:gold|coins?)/gi,
+    magic_scroll: /(?:find|discover|gain|acquire|collect).*?(?:magic|magical).*?scroll/gi,
+    dragon_scale: /(?:find|discover|gain|acquire|collect).*?dragon.*?scale/gi,
+    ancient_relic: /(?:find|discover|gain|acquire|collect).*?(?:ancient|old).*?relic/gi,
+    crystal_shard: /(?:find|discover|gain|acquire|collect).*?crystal.*?shard/gi,
+    enchanted_ring: /(?:find|discover|gain|acquire|collect).*?(?:enchanted|magical).*?ring/gi,
+    fire_gem: /(?:find|discover|gain|acquire|collect).*?fire.*?gem/gi,
+    ice_crystal: /(?:find|discover|gain|acquire|collect).*?ice.*?crystal/gi,
+    shadow_cloak: /(?:find|discover|gain|acquire|collect).*?shadow.*?cloak/gi,
+    dragon_tooth: /(?:find|discover|gain|acquire|collect).*?dragon.*?tooth/gi,
+    mystic_orb: /(?:find|discover|gain|acquire|collect).*?mystic.*?orb/gi,
+    holy_water: /(?:find|discover|gain|acquire|collect).*?holy.*?water/gi,
+    cursed_amulet: /(?:find|discover|gain|acquire|collect).*?cursed.*?amulet/gi
+  };
+  
+  // Process each item pattern
+  Object.entries(itemPatterns).forEach(([item, pattern]) => {
+    const matches = response.match(pattern);
+    if (matches) {
+      // Check if there's a specific number mentioned, otherwise default to 1
+      const numberMatch = matches[0].match(/(\d+)/);
+      const amount = numberMatch ? parseInt(numberMatch[1]) : 1;
+      
+      if (gameState.inventory.hasOwnProperty(item)) {
+        gameState.inventory[item] += amount;
+        const itemName = item.replace(/_/g, ' ').toUpperCase();
+        addSystemMessage(`📦 Found ${itemName}: +${amount}`);
+      }
+    }
+  });
+  
+  // Check for item usage
+  if (response.includes('use') || response.includes('consume')) {
+    if (response.includes('potion') && gameState.inventory.potion > 0) {
+      // This will be handled by processGameStateChanges
+    }
+    if (response.includes('elixir') && gameState.inventory.elixir > 0) {
+      // This will be handled by processGameStateChanges
+    }
+  }
+}
+
+// Scene Generation
+async function generateScene(storyText, retries = 3) {
+  try {
+    sceneLoading.style.display = 'block';
+    sceneLoading.textContent = '🎨 Painting the epic scene...';
+    sceneImage.src = '';
+    sceneImage.classList.remove('loaded');
+    
+    const response = await fetch('/generate_scene', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        story: storyText,
+        gameState: gameState 
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Scene generation failed");
+    }
+
+    const data = await response.json();
+    sceneImage.onload = () => {
+      sceneImage.classList.add('loaded');
+      sceneLoading.style.display = 'none';
+    };
+    sceneImage.src = `data:image/png;base64,${data.image}`;
+    
+  } catch (err) {
+    console.error("Scene Generation Error:", err);
+    if (retries > 0) {
+      sceneLoading.textContent = `🔄 Retrying (${retries} left)...`;
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return generateScene(storyText, retries - 1);
+    }
+    sceneLoading.textContent = "⚠️ Scene failed - Click to retry";
+    sceneLoading.onclick = () => generateScene(storyText, 3);
+  }
+}
+
+// Check Game Ending
+function checkGameEnding() {
+  if (gameState.playerHealth <= 0) {
+    endGame('defeat', '💀', 'Defeat...', 'The dragon\'s flames have consumed you. But legends say brave warriors never truly die...');
+  } else if (gameState.dragonHealth <= 0) {
+    if (gameState.playerHealth > 70) {
+      endGame('victory', '👑', 'Glorious Victory!', 'You have slain the ancient dragon with honor and skill! The realm celebrates your triumph!');
+    } else if (gameState.playerHealth > 30) {
+      endGame('pyrrhic', '⚔️', 'Hard-Won Victory', 'You defeated the dragon, but at great cost. Victory tastes bittersweet when paid for in blood.');
+    } else {
+      endGame('barely', '🩹', 'Narrow Victory', 'You barely survived the encounter, but the dragon lies dead. Sometimes survival is victory enough.');
+    }
+  }
+}
+
+// End Game
+function endGame(type, emoji, title, description) {
+  gameState.gameEnded = true;
+  
+  document.getElementById('ending-emoji').textContent = emoji;
+  document.getElementById('ending-title').textContent = title;
+  document.getElementById('ending-description').textContent = description;
+  
+  gameOverScreen.classList.add('visible');
+  
+  // Add final message to story
+  addSystemMessage(`🏁 ${title} - ${description}`);
+}
+
+// Start New Game
+function startNewGame() {
+  gameOverScreen.classList.remove('visible');
+  
+  // Reset game state
+  gameState = {
+    difficulty: 'easy',
+    playerHealth: 100,
+    playerMaxHealth: 100,
+    playerMana: 50,
+    playerMaxMana: 50,
+    dragonHealth: 150,
+    dragonMaxHealth: 150,
+    inventory: {
+      sword: 1,
+      shield: 1,
+      potion: 3,
+      elixir: 2,
+      gold: 0,
+      magic_scroll: 0,
+      dragon_scale: 0,
+      ancient_relic: 0,
+      crystal_shard: 0,
+      enchanted_ring: 0,
+      fire_gem: 0,
+      ice_crystal: 0,
+      shadow_cloak: 0,
+      dragon_tooth: 0,
+      mystic_orb: 0,
+      holy_water: 0,
+      cursed_amulet: 0
+    },
+    storyHistory: [],
+    turnCount: 0,
+    gameEnded: false,
+    lastImageScene: null
+  };
+  
+  // Reset UI
+  storyDisplay.innerHTML = '';
+  sceneImage.src = '';
+  sceneImage.classList.remove('loaded');
+  
+  // Reset difficulty to easy
+  document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-difficulty="easy"]').classList.add('active');
+  
+  initializeGame();
+}
+
+// UI Helper Functions
+function addMessage(text, type) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${type}-message`;
+  messageDiv.innerHTML = escapeHTML(text);
+  storyDisplay.appendChild(messageDiv);
+  storyDisplay.scrollTop = storyDisplay.scrollHeight;
+  
+  gameState.storyHistory.push({ text, type, timestamp: Date.now() });
+}
+
+function addSystemMessage(text) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'message system-message';
+  messageDiv.innerHTML = escapeHTML(text);
+  storyDisplay.appendChild(messageDiv);
+  storyDisplay.scrollTop = storyDisplay.scrollHeight;
+  
+  gameState.storyHistory.push({ text, type: 'system', timestamp: Date.now() });
+}
+
+function escapeHTML(str) {
+  if (!str) return '';
+  return str.replace(/[&<>]/g, tag => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;'
+  }[tag]));
+}
+
+function showLoading(show) {
+  loading.style.display = show ? 'block' : 'none';
+}
+
+function updateDisplay() {
+  // Update health bar
+  const healthPercent = (gameState.playerHealth / gameState.playerMaxHealth) * 100;
+  healthBar.style.width = `${healthPercent}%`;
+  healthText.textContent = `${gameState.playerHealth}/${gameState.playerMaxHealth}`;
+  
+  // Update mana bar
+  const manaPercent = (gameState.playerMana / gameState.playerMaxMana) * 100;
+  manaBar.style.width = `${manaPercent}%`;
+  manaText.textContent = `${gameState.playerMana}/${gameState.playerMaxMana}`;
+  
+  // Update dragon health bar
+  const dragonPercent = (gameState.dragonHealth / gameState.dragonMaxHealth) * 100;
+  dragonHealthBar.style.width = `${dragonPercent}%`;
+  dragonHealthText.textContent = `${gameState.dragonHealth}/${gameState.dragonMaxHealth}`;
+  
+  // Update inventory display
+  updateInventoryDisplay();
+  
+  // Update health bar colors based on percentage
+  if (healthPercent < 25) {
+    healthBar.style.background = 'linear-gradient(90deg, #ff4444, #cc0000)';
+  } else if (healthPercent < 50) {
+    healthBar.style.background = 'linear-gradient(90deg, #ffaa00, #ff8800)';
+  } else {
+    healthBar.style.background = 'linear-gradient(90deg, var(--health-green), #228b22)';
+  }
+}
+
+function updateInventoryDisplay() {
+  const inventoryGrid = document.getElementById('inventory-grid');
+  inventoryGrid.innerHTML = '';
+  
+  const itemEmojis = {
+    sword: '⚔️',
+    shield: '🛡️',
+    potion: '🧪',
+    elixir: '🔮',
+    gold: '💰',
+    magic_scroll: '📜',
+    dragon_scale: '🐲',
+    ancient_relic: '🏺',
+    crystal_shard: '💎',
+    enchanted_ring: '💍',
+    fire_gem: '🔥',
+    ice_crystal: '❄️',
+    shadow_cloak: '🌑',
+    dragon_tooth: '🦷',
+    mystic_orb: '🔮',
+    holy_water: '💧',
+    cursed_amulet: '🔗'
+  };
+  
+  Object.entries(gameState.inventory).forEach(([item, count]) => {
+    if (count > 0) {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'inventory-item';
+      itemDiv.dataset.item = item;
+      itemDiv.innerHTML = `
+        <span class="emoji">${itemEmojis[item] || '❓'}</span>
+        <div class="count">${count}</div>
+      `;
+      
+      // Add click handler for usable items
+      if (item === 'potion' || item === 'elixir') {
+        itemDiv.onclick = () => useItem(item);
+        itemDiv.style.cursor = 'pointer';
+      }
+      
+      inventoryGrid.appendChild(itemDiv);
+    }
+  });
+}
+
+function useItem(itemType) {
+  if (gameState.gameEnded) return;
+  
+  if (itemType === 'potion' && gameState.inventory.potion > 0) {
+    processAction('I drink a healing potion to restore my health!');
+  } else if (itemType === 'elixir' && gameState.inventory.elixir > 0) {
+    processAction('I drink a mana elixir to restore my magical energy!');
+  }
+}
+
+// Keyboard Controls
+improviseInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    improviseAction();
+  }
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (gameState.gameEnded) return;
+  
+  switch(e.key) {
+    case '1':
+      takeAction('attack');
+      break;
+    case '2':
+      takeAction('defend');
+      break;
+    case '3':
+      improviseInput.focus();
+      break;
+  }
+});
+
+// Inventory item tooltips
+document.addEventListener('mouseover', (e) => {
+  if (e.target.closest('.inventory-item')) {
+    const item = e.target.closest('.inventory-item').dataset.item;
+    const tooltips = {
+      sword: 'Your trusty blade - deals consistent damage',
+      shield: 'Reduces incoming damage when defending',
+      potion: 'Click to drink and restore health',
+      elixir: 'Click to drink and restore mana',
+      gold: 'Ancient coins found during your adventure',
+      magic_scroll: 'Contains powerful spells - use in combat',
+      dragon_scale: 'Trophy from your epic battle',
+      ancient_relic: 'Mystical artifact with unknown powers',
+      crystal_shard: 'Glowing crystal fragment',
+      enchanted_ring: 'Magical ring with protective properties',
+      fire_gem: 'Burning gem radiating heat',
+      ice_crystal: 'Frozen crystal that chills the air',
+      shadow_cloak: 'Dark cloak that bends light',
+      dragon_tooth: 'Sharp fang from an ancient beast',
+      mystic_orb: 'Swirling orb of magical energy',
+      holy_water: 'Blessed water with purifying power',
+      cursed_amulet: 'Dark amulet with mysterious curse'
+    };
+    
+    if (tooltips[item]) {
+      e.target.title = tooltips[item];
+    }
+  }
+});
+
+// Initialize the game when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  initializeGame();
+});
+  </script>
+</body>
+</html>
